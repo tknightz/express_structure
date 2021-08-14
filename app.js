@@ -5,15 +5,20 @@ const session = require('express-session')
 const cors = require('cors')
 const passport = require('passport')
 const configPassport = require('./config/passport')
+const path = require('path')
 
 
 const app = express()
 
 
-// Passport config
-configPassport(passport)
+app.set('views', path.join(__dirname, 'app/views'))
+app.set('view engine', 'ejs')
+app.use(express.static(__dirname + '/public'))
+
+// Cors
 app.use(cors())
 
+// Body parser
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
@@ -27,13 +32,15 @@ app.use(session({
 // connect flash
 app.use(flash())
 
-// Passport session
+// Passport config
+configPassport(passport)
 app.use(passport.initialize())
 app.use(passport.session())
 
+
+// Router
 app.use('/', routerManager)
 
-app.use(express.static(__dirname + '/public'))
 
 
 app.listen(8000, () => {

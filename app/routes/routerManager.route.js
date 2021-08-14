@@ -5,7 +5,7 @@ const userRouter = require('./user.route')
 router
   .route('/')
   .get((_, res) => {
-      res.json({name: 'tknightz'})
+      res.render('index')
   })
 
 router
