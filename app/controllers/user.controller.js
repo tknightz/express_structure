@@ -1,8 +1,5 @@
-require('dotenv').config()
-const mongoose = require('mongoose')
 const User = require('./../models/user.model.js')
-// const passport = require('passport')
-const jwt = require('jsonwebtoken')
+const passport = require('passport')
 
 exports.create = (req, res) => {
   let user = new User(req.body)
@@ -19,7 +16,7 @@ exports.find = (req, res) => {
     })
 }
 
-exports.all = (req, res) => {
+exports.all = (_, res) => {
   User
     .find({})
     .then((users) => {
@@ -27,45 +24,21 @@ exports.all = (req, res) => {
     })
 }
 
-// exports.login = (req, res) => {
-//   passport.authenticate('local', {
-//     successRedirect: '/',
-//     failureRedirect: '/register'
-//   })(req, res)
-// }
-exports.login = async (req, res) => {
-  const { username, password } = req.body
-  const user = await User.findOne({username: username})
-  if (!user) return res.json({err: 'User not found!'})
-  if (!user.authenticate(password)) return res.json({err: 'Wrong password!'})
-
-  const accessToken = jwt.sign({id: user._id}, process.env.ACCESS_TOKEN_SECRET)
-  const refreshToken = jwt.sign({id: user._id}, process.env.REFRESH_TOKEN_SECRET)
-  res.json({ accessToken: accessToken, refreshToken: refreshToken })
+exports.login = (req, res) => {
+  passport.authenticate('local', {
+    successRedirect: '/',
+    failureRedirect: '/register'
+  })(req, res)
 }
 
-exports.logout = (req, res) => {
+exports.logout = (req, _) => {
   req.logout()
 }
 
-// exports.requireLogin = (req, res, next) => {
-//   if(req.isAuthenticated()){
-//     return next()
-//   }
-
-//   res.json({err: 'Access denial!'})
-// }
-//
-
 exports.requireLogin = (req, res, next) => {
-  const authHeader = req.headers['authorization']
-  const token = authHeader && authHeader.split(' ')[1]
-
-  if (token === null) return res.sendStatus(401)
-
-  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
-    if (err) return res.json({err: 'Invalid Token'})
-    req.user = user
+  if(req.isAuthenticated()){
     return next()
-  })
+  }
+
+  res.json({err: 'Access denial!'})
 }

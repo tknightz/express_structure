@@ -1,11 +1,10 @@
 const router = require('express').Router()
 const user = require('../controllers/user.controller')
 const userRouter = require('./user.route')
-const path = require('path')
 
 router
   .route('/')
-  .get((req, res) => {
+  .get((_, res) => {
       res.json({name: 'tknightz'})
   })
 
