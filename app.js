@@ -3,17 +3,18 @@ const flash = require('connect-flash')
 const routerManager = require('./app/routes/routerManager.route')
 const session = require('express-session')
 const cors = require('cors')
-// const passport = require('passport')
+const passport = require('passport')
+const configPassport = require('./config/passport')
 
 
 const app = express()
 
 
 // Passport config
-// require('./config/passport')(passport)
+configPassport(passport)
 app.use(cors())
 
-app.use(expres.json())
+app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
 // Express session
@@ -27,8 +28,8 @@ app.use(session({
 app.use(flash())
 
 // Passport session
-// app.use(passport.initialize())
-// app.use(passport.session())
+app.use(passport.initialize())
+app.use(passport.session())
 
 app.use('/', routerManager)
 
